@@ -16,7 +16,6 @@ def start_game():
         for i in range(9):
             enemies.append(Enemy(canvas, np.array([50, 168, 82]), 100 + 120 * i, 100))
 
-
         while True:
             frame = canvas.draw_frame(cam)
 
