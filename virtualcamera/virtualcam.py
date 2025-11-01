@@ -13,7 +13,6 @@ def start_game():
 
         canvas.add_sprite(sprite)
 
-
         while True:
             frame = canvas.draw_frame(cam)
 
