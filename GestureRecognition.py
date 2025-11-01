@@ -65,7 +65,7 @@ options = HandLandmarkerOptions(
     running_mode=VisionRunningMode.IMAGE, num_hands=2)
 with HandLandmarker.create_from_options(options) as landmarker:
     cv2.namedWindow("preview")
-    vc = cv2.VideoCapture(1)
+    vc = cv2.VideoCapture(0)
 
     if vc.isOpened(): # try to get the first frame
         rval, frame = vc.read()
@@ -77,7 +77,7 @@ with HandLandmarker.create_from_options(options) as landmarker:
         detection_result = landmarker.detect(mp_image)
 
         annotated_image = draw_landmarks_on_image(frame, detection_result)
-        cv2.imshow("preview",cv2.cvtColor(annotated_image, cv2.COLOR_RGB2BGR))
+        cv2.imshow("preview",annotated_image)
         rval, frame = vc.read()
         key = cv2.waitKey(20)
         if key == 27: # exit on ESC
