@@ -35,16 +35,19 @@ class Enemy:
         if abs(self.delta) > 50:
             self.delta_dir *= -1
 
+        hit_player = False
+
         for bullet in self.bullets:
             bullet.next_step()
             for i, player in enumerate(self.game.players):
                 if player.is_colliding_with_bullet(bullet):
-                    self.game.remove_player(i)
-                    continue
+                    self.game.damage_player(i)
+                    hit_player = True
 
-
-            if bullet.sprite.y < self.canvas.height:
+            if bullet.sprite.y < self.canvas.height and not hit_player:
                 keep_bullets.append(bullet)
+            else:
+                self.canvas.remove_sprite(bullet.sprite)
         self.bullets = keep_bullets
         if randint(0,199) == 0:
             #print("SPAWN")

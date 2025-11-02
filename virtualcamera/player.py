@@ -16,6 +16,7 @@ class Player:
         self.bullets = []
         self.canvas = canvas
         self.game = game
+        self.lives = 3
         canvas.add_sprite(self.sprite)
 
     def set_image(self, img):

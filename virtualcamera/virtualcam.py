@@ -41,9 +41,12 @@ class Game:
     def draw_frame(self):
         return self.canvas.draw_frame(self.width, self.height)
     
-    def remove_player(self, i):
-        self.canvas.remove_sprite(self.players[i].sprite)
-        del self.players[i]
+    def damage_player(self, i):
+        self.players[i].lives -= 1
+
+        if self.players[i].lives == 0: 
+            self.canvas.remove_sprite(self.players[i].sprite)
+            del self.players[i]
 
     def remove_enemy(self, i):
         self.canvas.remove_sprite(self.enemies[i].sprite)
