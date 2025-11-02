@@ -24,14 +24,39 @@ class Game:
         enemy_img = np.asarray(Image.open('PublicEnemyNumber1.png').convert('RGB'))
         self.resized_enemy_img = cv2.resize(enemy_img, dsize=(100,100))
 
-        for i in range(1):
-            self.players.append(Player(self, self.canvas, np.array([255, 255, 255]), 100 + 120 * i, 500))
+        for i in range(4):
+            self.players.append(Player(self, self.canvas, np.array([255, 255, 255]), 100 + 140 * i, 500))
         
         self.spawn_enemies()
 
+    def get_player_screenshots(self, screen):
+
+        imgs = []
+
+        clipped_screen = screen[131:131+186, 1509:1509+331]
+        new_im = cv2.resize(clipped_screen, dsize=(100,100))
+        imgs.append(new_im)
+
+        clipped_screen = screen[331:331+186, 1509:1509+331]
+        new_im = cv2.resize(clipped_screen, dsize=(100,100))
+        imgs.append(new_im)
+
+        clipped_screen = screen[532:532+186, 1509:1509+331]
+        new_im = cv2.resize(clipped_screen, dsize=(100,100))
+        imgs.append(new_im)
+
+        clipped_screen = screen[734:734+186, 1509:1509+331]
+        new_im = cv2.resize(clipped_screen, dsize=(100,100))
+        imgs.append(new_im)
+
+        return imgs
+
     def next_step(self, screenshot_frame):
-        for p in self.players:
-                p.set_image(screenshot_frame)
+
+        screenshots = self.get_player_screenshots(screenshot_frame)
+
+        for index, p in enumerate(self.players):
+                p.set_image(screenshots[index])
 
         for player in self.players:
             player.next_step()
@@ -43,7 +68,7 @@ class Game:
 
     def spawn_enemies(self):
         for i in range(9):
-            self.enemies.append(Enemy(self, self.canvas, np.array([50, 168, 82]), 100 + 120 * i, 100), self.resized_enemy_img)
+            self.enemies.append(Enemy(self, self.canvas, 100 + 120 * i, 100, self.resized_enemy_img))
 
     def draw_frame(self):
         return self.canvas.draw_frame(self.width, self.height)
@@ -68,9 +93,8 @@ def start_game():
         game = Game(cam.width, cam.height)
 
         while True:
-            img = pyautogui.screenshot(region=(0,0,500,500))
+            img = pyautogui.screenshot()
             screenshot_frame = np.array(img)
-            screenshot_frame = cv2.resize(screenshot_frame, dsize=(100,100))
 
             game.next_step(screenshot_frame)
 
