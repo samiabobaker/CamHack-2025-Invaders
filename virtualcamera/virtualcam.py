@@ -14,6 +14,7 @@ from mediapipe import solutions
 from mediapipe.framework.formats import landmark_pb2
 import numpy as np
 import GestureRecognition as gr
+from getCamView import get_players_from_screenshot
 
 model_path = "hand_landmarker.task"
 
@@ -39,39 +40,14 @@ class Game:
         enemy_img = np.asarray(Image.open('PublicEnemyNumber1.png').convert('RGB'))
         self.resized_enemy_img = cv2.resize(enemy_img, dsize=(100,100))
 
-        for i in range(4):
+        for i in range(2):
             self.players.append(Player(self, self.canvas, np.array([255, 255, 255]), 100 + 140 * i, 500))
         
         self.spawn_enemies()
 
-    def get_player_screenshots(self, screen):
-
-        imgs = []
-
-        clipped_screen = screen[131:131+186, 1509:1509+331]
-        new_im = cv2.resize(clipped_screen, dsize=(100,100))
-        imgs.append(new_im)
-
-        clipped_screen = screen[331:331+186, 1509:1509+331]
-        new_im = cv2.resize(clipped_screen, dsize=(100,100))
-        imgs.append(new_im)
-
-        clipped_screen = screen[532:532+186, 1509:1509+331]
-        new_im = cv2.resize(clipped_screen, dsize=(100,100))
-        imgs.append(new_im)
-
-        clipped_screen = screen[734:734+186, 1509:1509+331]
-        new_im = cv2.resize(clipped_screen, dsize=(100,100))
-        imgs.append(new_im)
-
-        return imgs
-
-    def next_step(self, screenshot_frame):
-
-        screenshots = self.get_player_screenshots(screenshot_frame)
-
+    def next_step(self, screens):
         for index, p in enumerate(self.players):
-                p.set_image(screenshots[index])
+                p.set_image(screens[index])
 
         for player in self.players:
             player.next_step()
@@ -99,6 +75,30 @@ class Game:
         self.canvas.remove_sprite(self.enemies[i].sprite)
         del self.enemies[i]
 
+def get_player_screenshots(screen):
+
+    #return [(1509, 131, 331, 186), (1509, 331, 331, 186), (1509, )]
+
+    imgs = []
+
+    clipped_screen = screen[131:131+186, 1509:1509+331]
+    #new_im = cv2.resize(clipped_screen, dsize=(100,100))
+    imgs.append(clipped_screen)
+
+    clipped_screen = screen[331:331+186, 1509:1509+331]
+    #new_im = cv2.resize(clipped_screen, dsize=(100,100))
+    imgs.append(clipped_screen)
+
+    clipped_screen = screen[532:532+186, 1509:1509+331]
+    #new_im = cv2.resize(clipped_screen, dsize=(100,100))
+    imgs.append(clipped_screen)
+
+    clipped_screen = screen[734:734+186, 1509:1509+331]
+    #new_im = cv2.resize(clipped_screen, dsize=(100,100))
+    imgs.append(clipped_screen)
+
+    return imgs
+
 def start_game():
     options = HandLandmarkerOptions(
     base_options=BaseOptions(model_asset_path='hand_landmarker.task'),
@@ -110,16 +110,38 @@ def start_game():
 
             game = Game(cam.width, cam.height)
 
+            input("START GAME: ")
+
+            img = pyautogui.screenshot()
+            screenshot_frame = np.array(img)
+
+            bounds = get_players_from_screenshot(screenshot_frame)
+
             while True:
                 img = pyautogui.screenshot()
                 screenshot_frame = np.array(img)
 
-                mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=cv2.cvtColor(screenshot_frame, cv2.COLOR_RGB2BGR))
-                detection_result = landmarker.detect(mp_image)
-                gr.detect_shoot(detection_result)
-                gr.get_xpos(detection_result)
+                for index, player in enumerate(game.players):
+                    x,y,w,h = bounds[index]
 
-                game.next_step(screenshot_frame)
+                    screen = screenshot_frame[y:y+h,x:x+w]
+
+                    mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=cv2.cvtColor(screen, cv2.COLOR_RGB2BGR))
+                    detection_result = landmarker.detect(mp_image)
+
+                    x = gr.get_xpos(detection_result, default_xpos = player.sprite.x)
+                    if x:
+                        player.set_position(int((1-x) * cam.width))
+
+                    if gr.detect_shoot(detection_result):
+                        player.shoot()
+                    cv2.imshow("preview", gr.draw_landmarks_on_image(screen, detection_result))
+                    key = cv2.waitKey(20)
+                    if key == 27: # exit on ESC
+                        break  
+                        print(x)
+
+                game.next_step([cv2.resize(screenshot_frame[y:y+h,x:x+w], dsize=(100,100)) for x,y,h,w in bounds])
 
                 frame = game.draw_frame()
 

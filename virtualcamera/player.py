@@ -46,22 +46,32 @@ class Player:
 
         for bullet in self.bullets:
             bullet.next_step()
-            for i, enemy in enumerate(self.game.enemy):
+
+            hit_enemy = False
+
+            for i, enemy in enumerate(self.game.enemies):
                 if enemy.is_colliding_with_bullet(bullet):
                     self.game.remove_enemy(i)
-                    continue
+                    hit_enemy = True
 
-            if bullet.sprite.y >= 0:
+            if bullet.sprite.y >= 0 and not hit_enemy:
                 keep_bullets.append(bullet)
+            else:
+                self.canvas.remove_sprite(bullet.sprite)
         self.bullets = keep_bullets
 
     def set_position(self, x):
+        if x < 0:
+            return 0
+        if x > self.canvas.width:
+            return self.canvas.width
         self.sprite.x = x
 
     def shoot(self):
+        print(self.cooldown)
         if self.cooldown == 0:
             self.spawn_bullet()
-            self.cooldown = 100
+            self.cooldown = 50
 
     def is_colliding_with_bullet(self, bullet):
         if bullet.sprite.y > self.sprite.y and bullet.sprite.y < self.sprite.y + self.sprite.height and bullet.sprite.x > self.sprite.x and bullet.sprite.x < self.sprite.x + self.sprite.width:

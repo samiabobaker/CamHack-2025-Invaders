@@ -36,7 +36,10 @@ class SquareSprite:
 
         square = np.full((self.height, self.width, 3), self.colour)
 
-        frame[self.y:self.y+self.height, self.x:self.x+self.width] = square
+        try: 
+            frame[self.y:self.y+self.height, self.x:self.x+self.width] = square
+        except:
+            return
 
 class CameraSprite:
     def __init__(self, img, x, y, width, height):
@@ -49,5 +52,7 @@ class CameraSprite:
     def draw(self, frame):
         if self.x + self.width >= len(frame[0]) or self.y + self.height >= len(frame):
             return
-
-        frame[self.y:self.y+self.height, self.x:self.x+self.width] = self.img
+        try:
+            frame[self.y:self.y+self.height, self.x:self.x+self.width] = self.img
+        except:
+            return
