@@ -21,11 +21,13 @@ class Game:
         self.enemies = []
 
         # Load in enemy image
-        enemy_img = np.asarray(Image.open('PublicEnemyNumber1.png'))
-        resized_enemy_img = cv2.resize(enemy_img, dsize=(100,100))
+        enemy_img = np.asarray(Image.open('PublicEnemyNumber1.png').convert('RGB'))
+        self.resized_enemy_img = cv2.resize(enemy_img, dsize=(100,100))
 
         for i in range(1):
             self.players.append(Player(self, self.canvas, np.array([255, 255, 255]), 100 + 120 * i, 500))
+        
+        self.spawn_enemies()
 
     def next_step(self, screenshot_frame):
         for p in self.players:
@@ -37,17 +39,21 @@ class Game:
             enemy.next_step()
         
         if self.enemies is None:
+            self.spawn_enemies()
 
     def spawn_enemies(self):
         for i in range(9):
-            self.enemies.append(Enemy(self, self.canvas, np.array([50, 168, 82]), 100 + 120 * i, 100), resized_enemy_img)
+            self.enemies.append(Enemy(self, self.canvas, np.array([50, 168, 82]), 100 + 120 * i, 100), self.resized_enemy_img)
 
     def draw_frame(self):
         return self.canvas.draw_frame(self.width, self.height)
     
-    def remove_player(self, i):
-        self.canvas.remove_sprite(self.players[i].sprite)
-        del self.players[i]
+    def damage_player(self, i):
+        self.players[i].lives -= 1
+
+        if self.players[i].lives == 0: 
+            self.canvas.remove_sprite(self.players[i].sprite)
+            del self.players[i]
 
     def remove_enemy(self, i):
         self.canvas.remove_sprite(self.enemies[i].sprite)
