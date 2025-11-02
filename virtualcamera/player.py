@@ -1,6 +1,7 @@
 from virtualcamera.canvas import SquareSprite, CameraSprite
 from random import randint
 import numpy as np
+import cv2
 
 class PlayerBullet:
     def __init__(self, canvas, colour, x, y):
@@ -20,8 +21,18 @@ class Player:
         self.cooldown = 0
         canvas.add_sprite(self.sprite)
 
+    def apply_tint(self, img):
+        tint_color = np.array([255, 0, 0], dtype=np.uint8)  # Light orange-blue tint
+        # Create a solid color image of the same size
+        tint_layer = np.full_like(img, tint_color)
+
+        # Blend the original image with the tint layer
+        alpha = 0.25*(3-self.lives)  # Tint strength (0 = no tint, 1 = full tint)
+        tinted_image = cv2.addWeighted(img, 1 - alpha, tint_layer, alpha, 0)
+        return tinted_image
+
     def set_image(self, img):
-        self.sprite.img = img
+        self.sprite.img = self.apply_tint(img)
 
     def spawn_bullet(self):
         bullet = PlayerBullet(self.canvas, np.array([255, 255, 255]), self.sprite.x + 50, self.sprite.y)
