@@ -1,5 +1,6 @@
-from virtualcamera.canvas import SquareSprite
+from virtualcamera.canvas import CameraSprite, SquareSprite
 from random import randint
+import numpy as np
 
 class EnemyBullet:
     def __init__(self, canvas, colour, x, y):
@@ -10,8 +11,8 @@ class EnemyBullet:
         self.sprite.y += 10
 
 class Enemy:
-    def __init__(self, game, canvas, colour, x, y):
-        self.sprite = SquareSprite(colour, x, y, 100, 100)
+    def __init__(self, game, canvas, x, y, img):
+        self.sprite = CameraSprite(img, x, y, 100, 100)
         self.og_x = x
         self.og_y = y
         self.delta = 0
@@ -22,7 +23,7 @@ class Enemy:
         canvas.add_sprite(self.sprite)
 
     def spawn_bullet(self):
-        bullet = EnemyBullet(self.canvas, self.sprite.colour, self.sprite.x + 50, self.sprite.y)
+        bullet = EnemyBullet(self.canvas, np.array([255,255,255]), self.sprite.x + 50, self.sprite.y)
         self.bullets.append(bullet)
     
     def next_step(self):

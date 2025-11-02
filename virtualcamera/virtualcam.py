@@ -6,6 +6,7 @@ from virtualcamera.enemy import Enemy
 from virtualcamera.player import Player
 import pyautogui
 import cv2
+from PIL import Image
 
 
 class Game:
@@ -19,10 +20,14 @@ class Game:
         self.players = []
         self.enemies = []
 
+        # Load in enemy image
+        enemy_img = np.asarray(Image.open('PublicEnemyNumber1.png'))
+        resized_enemy_img = cv2.resize(enemy_img, dsize=(100,100))
+
         for i in range(1):
             self.players.append(Player(self, self.canvas, np.array([255, 255, 255]), 100 + 120 * i, 500))
         for i in range(9):
-            self.enemies.append(Enemy(self, self.canvas, np.array([50, 168, 82]), 100 + 120 * i, 100))
+            self.enemies.append(Enemy(self, self.canvas, np.array([50, 168, 82]), 100 + 120 * i, 100), resized_enemy_img)
 
     def next_step(self, screenshot_frame):
         for p in self.players:
@@ -45,6 +50,7 @@ class Game:
         del self.enemies[i]
 
 def start_game():
+
     with pyvirtualcam.Camera(width=1280, height=720, fps=20) as cam:
         print(f'Using virtual camera: {cam.device}')
         frame = np.zeros((cam.height, cam.width, 3), np.uint8)  # RGB
