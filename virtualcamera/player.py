@@ -17,6 +17,7 @@ class Player:
         self.canvas = canvas
         self.game = game
         self.lives = 3
+        self.cooldown = 0
         canvas.add_sprite(self.sprite)
 
     def set_image(self, img):
@@ -26,10 +27,11 @@ class Player:
         bullet = PlayerBullet(self.canvas, np.array([255, 255, 255]), self.sprite.x + 50, self.sprite.y)
         self.bullets.append(bullet)
     
-    def next_step(self, x):
+    def next_step(self):
         keep_bullets = []
 
-        self.sprite.x = x
+        if self.cooldown > 0:
+            self.cooldown -= 1
 
         for bullet in self.bullets:
             bullet.next_step()
@@ -41,6 +43,14 @@ class Player:
             if bullet.sprite.y >= 0:
                 keep_bullets.append(bullet)
         self.bullets = keep_bullets
+
+    def set_position(self, x):
+        self.sprite.x = x
+
+    def shoot(self):
+        if self.cooldown == 0:
+            self.spawn_bullet()
+            self.cooldown = 100
 
     def is_colliding_with_bullet(self, bullet):
         if bullet.sprite.y > self.sprite.y and bullet.sprite.y < self.sprite.y + self.sprite.height and bullet.sprite.x > self.sprite.x and bullet.sprite.x < self.sprite.x + self.sprite.width:

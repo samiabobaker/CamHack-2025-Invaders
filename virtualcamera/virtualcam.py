@@ -36,7 +36,7 @@ class Game:
                 p.set_image(screenshot_frame)
 
         for player in self.players:
-            player.next_step(100)
+            player.next_step()
         for enemy in self.enemies:
             enemy.next_step()
     
