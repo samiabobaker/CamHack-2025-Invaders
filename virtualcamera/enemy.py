@@ -19,7 +19,7 @@ class Enemy:
         self.bullets = []
         self.canvas = canvas
         canvas.add_sprite(self.sprite)
-        self.frame_count = 0
+        self.frame_count = 0 # why needed?
 
     def spawn_bullet(self):
         bullet = EnemyBullet(self.canvas, self.sprite.colour, self.sprite.x + 50, self.sprite.y)
@@ -41,7 +41,7 @@ class Enemy:
                 keep_bullets.append(bullet)
         self.bullets = keep_bullets
         #print(self.frame_count)
-        if self.frame_count % 100 == randint(0,99):
+        if self.frame_count % 100 == randint(0,99): # if randint(0,99) == 0:
             #print("SPAWN")
             self.spawn_bullet()
 
