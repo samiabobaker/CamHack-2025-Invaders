@@ -15,7 +15,6 @@ class Player:
         self.bullets = []
         self.canvas = canvas
         canvas.add_sprite(self.sprite)
-        self.frame_count = 0
 
     def spawn_bullet(self):
         bullet = PlayerBullet(self.canvas, self.sprite.colour, self.sprite.x + 50, self.sprite.y)
@@ -32,7 +31,6 @@ class Player:
             if bullet.sprite.y >= 0:
                 keep_bullets.append(bullet)
         self.bullets = keep_bullets
-        #print(self.frame_count)
 
 
 
