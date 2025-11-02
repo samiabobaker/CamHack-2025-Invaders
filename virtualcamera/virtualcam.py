@@ -7,6 +7,21 @@ from virtualcamera.player import Player
 import pyautogui
 import cv2
 from PIL import Image
+import mediapipe as mp
+from mediapipe.tasks import python
+from mediapipe.tasks.python import vision
+from mediapipe import solutions
+from mediapipe.framework.formats import landmark_pb2
+import numpy as np
+import GestureRecognition as gr
+
+model_path = "hand_landmarker.task"
+
+BaseOptions = mp.tasks.BaseOptions
+HandLandmarker = mp.tasks.vision.HandLandmarker
+HandLandmarkerOptions = mp.tasks.vision.HandLandmarkerOptions
+HandLandmarkerResult = mp.tasks.vision.HandLandmarkerResult
+VisionRunningMode = mp.tasks.vision.RunningMode
 
 
 class Game:
@@ -85,21 +100,29 @@ class Game:
         del self.enemies[i]
 
 def start_game():
-
+    options = HandLandmarkerOptions(
+    base_options=BaseOptions(model_asset_path='hand_landmarker.task'),
+    running_mode=VisionRunningMode.IMAGE, num_hands=1)
     with pyvirtualcam.Camera(width=1280, height=720, fps=20) as cam:
-        print(f'Using virtual camera: {cam.device}')
-        frame = np.zeros((cam.height, cam.width, 3), np.uint8)  # RGB
+        with HandLandmarker.create_from_options(options) as landmarker:
+            #print(f'Using virtual camera: {cam.device}')
+            frame = np.zeros((cam.height, cam.width, 3), np.uint8)  # RGB
 
-        game = Game(cam.width, cam.height)
+            game = Game(cam.width, cam.height)
 
-        while True:
-            img = pyautogui.screenshot()
-            screenshot_frame = np.array(img)
+            while True:
+                img = pyautogui.screenshot()
+                screenshot_frame = np.array(img)
 
-            game.next_step(screenshot_frame)
+                mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=cv2.cvtColor(screenshot_frame, cv2.COLOR_RGB2BGR))
+                detection_result = landmarker.detect(mp_image)
+                gr.detect_shoot(detection_result)
+                gr.get_xpos(detection_result)
 
-            frame = game.draw_frame()
+                game.next_step(screenshot_frame)
 
-            cam.send(frame)
+                frame = game.draw_frame()
 
-            cam.sleep_until_next_frame()
+                cam.send(frame)
+
+                cam.sleep_until_next_frame()
