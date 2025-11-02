@@ -26,8 +26,6 @@ class Game:
 
         for i in range(1):
             self.players.append(Player(self, self.canvas, np.array([255, 255, 255]), 100 + 120 * i, 500))
-        for i in range(9):
-            self.enemies.append(Enemy(self, self.canvas, np.array([50, 168, 82]), 100 + 120 * i, 100), resized_enemy_img)
 
     def next_step(self, screenshot_frame):
         for p in self.players:
@@ -37,7 +35,13 @@ class Game:
             player.next_step(100)
         for enemy in self.enemies:
             enemy.next_step()
-    
+        
+        if self.enemies is None:
+
+    def spawn_enemies(self):
+        for i in range(9):
+            self.enemies.append(Enemy(self, self.canvas, np.array([50, 168, 82]), 100 + 120 * i, 100), resized_enemy_img)
+
     def draw_frame(self):
         return self.canvas.draw_frame(self.width, self.height)
     
