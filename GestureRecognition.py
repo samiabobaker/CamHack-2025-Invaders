@@ -42,7 +42,7 @@ def get_xpos(results,default_xpos=0):
       return default_xpos
         
         
-
+'''
 options = HandLandmarkerOptions(
     base_options=BaseOptions(model_asset_path='hand_landmarker.task'),
     running_mode=VisionRunningMode.IMAGE, num_hands=1)
@@ -68,4 +68,4 @@ with HandLandmarker.create_from_options(options) as landmarker:
             break
 
     cv2.destroyWindow("preview")
-    vc.release()
+    vc.release()'''
