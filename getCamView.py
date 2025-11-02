@@ -54,6 +54,8 @@ for c in contours:
     if area > min_area and area < max_area:
         x,y,w,h = cv2.boundingRect(c)
         ROI = image[y:y+h, x:x+w]
+
+        # Commands below are unnecessary
         cv2.imwrite('ROI_{}.png'.format(image_number), ROI)
         cv2.rectangle(image, (x, y), (x + w, y + h), (36,255,12), 2)
         image_number += 1
