@@ -9,6 +9,9 @@ class Canvas:
     def add_sprite(self, sprite):
         self.sprites.append(sprite)
 
+    def add_sprite_bg(self, sprite):
+        self.sprites.insert(0, sprite)
+
     def remove_sprite(self, sprite):
         self.sprites.remove(sprite)
 

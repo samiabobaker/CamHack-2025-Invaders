@@ -5,7 +5,7 @@ import numpy as np
 class EnemyBullet:
     def __init__(self, canvas, colour, x, y):
         self.sprite = SquareSprite(colour, x, y, 10, 20)
-        canvas.add_sprite(self.sprite)
+        canvas.add_sprite_bg(self.sprite)
     
     def next_step(self):
         self.sprite.y += 10

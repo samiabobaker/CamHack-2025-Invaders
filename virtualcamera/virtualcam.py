@@ -21,13 +21,15 @@ class Game:
         self.enemies = []
 
         # Load in enemy image
-        enemy_img = np.asarray(Image.open('PublicEnemyNumber1.png'))
+        enemy_img = np.asarray(Image.open('PublicEnemyNumber1.png').convert('RGB'))
+
+        print(enemy_img.shape)
         resized_enemy_img = cv2.resize(enemy_img, dsize=(100,100))
 
         for i in range(1):
             self.players.append(Player(self, self.canvas, np.array([255, 255, 255]), 100 + 120 * i, 500))
         for i in range(9):
-            self.enemies.append(Enemy(self, self.canvas, np.array([50, 168, 82]), 100 + 120 * i, 100), resized_enemy_img)
+            self.enemies.append(Enemy(self, self.canvas, 100 + 120 * i, 100, resized_enemy_img))
 
     def next_step(self, screenshot_frame):
         for p in self.players:
