@@ -48,7 +48,7 @@ options = HandLandmarkerOptions(
     running_mode=VisionRunningMode.IMAGE, num_hands=1)
 with HandLandmarker.create_from_options(options) as landmarker:
     cv2.namedWindow("preview")
-    vc = cv2.VideoCapture(1)
+    vc = cv2.VideoCapture(0)
 
     if vc.isOpened(): # try to get the first frame
         rval, frame = vc.read()
